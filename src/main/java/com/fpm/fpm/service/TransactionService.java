@@ -115,4 +115,8 @@ public class TransactionService implements TransactionsRepository {
         return o;
     }
 
+   public List<Transactions> saveAllTrns(List<Transactions> t){
+        return  transactionsJpaRepo.saveAll(t);
+    }
+
 }

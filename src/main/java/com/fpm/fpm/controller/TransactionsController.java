@@ -35,7 +35,7 @@ public class TransactionsController {
         return  transactionService.updateTransactions(obj);
     }
 
-    @GetMapping("/transactions/deleteTransactions/{id}")
+    @DeleteMapping("/transactions/deleteTransactions/{id}")
     public String deleteTrans(@PathVariable("id") UUID id){
         return transactionService.deleteTransactions(id);
     }
@@ -58,6 +58,11 @@ public class TransactionsController {
     @GetMapping("/transactions/overview")
     public List<Overview> getOverview(@Param("username") String username){
         return  transactionService.getOverview(username);
+    }
+
+    @PostMapping("/saveAll")
+    public List<Transactions> saveA(@RequestBody List<Transactions> t){
+        return  transactionService.saveAllTrns(t);
     }
 
 }

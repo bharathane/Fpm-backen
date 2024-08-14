@@ -19,8 +19,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
@@ -61,21 +63,34 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(User request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
 
-        User user = repository.findByUsername(request.getUsername()).orElseThrow();
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        Optional<User> userOption=repository.findByUsername(request.getUsername());
+        if(userOption.isEmpty()){
+            return new AuthenticationResponse(null, null,"invalid user name", "");
+        }
 
-        revokeAllTokenByUser(user);
-        saveUserToken(accessToken, refreshToken, user);
+        User userFrom=userOption.get();
+        if(!passwordEncoder.matches(request.getPassword(),userFrom.getPassword())){
+            return new AuthenticationResponse(null, null,"Invalid Password", "");
+        }
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
 
-        return new AuthenticationResponse(accessToken, refreshToken,"User login was successful", user.getUsername());
+            User user = repository.findByUsername(request.getUsername()).orElseThrow();
+            String accessToken = jwtService.generateAccessToken(user);
+            String refreshToken = jwtService.generateRefreshToken(user);
+
+            revokeAllTokenByUser(user);
+            saveUserToken(accessToken, refreshToken, user);
+
+            return new AuthenticationResponse(accessToken, refreshToken,"User login was successful", user.getUsername());
+
+
+
 
     }
     private void revokeAllTokenByUser(User user) {
