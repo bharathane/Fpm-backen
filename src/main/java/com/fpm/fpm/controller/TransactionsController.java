@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://fpm-frontend.vercel.app/")
 @RestController
 public class TransactionsController {
     @Autowired
