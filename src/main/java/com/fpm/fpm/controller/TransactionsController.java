@@ -16,9 +16,9 @@ public class TransactionsController {
     @Autowired
     public TransactionService transactionService;
 
-    @GetMapping("/")
+    @GetMapping("/test")
     public String home(){
-        return "Home";
+        return "Welcome to Financial Portfolio Management";
     }
 
     @GetMapping("/transactions")
